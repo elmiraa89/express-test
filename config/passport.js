@@ -5,6 +5,8 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import bcrypt from "bcrypt"
 import User from '../models/users.model.js'
 import dotenv from 'dotenv'
+import { JWT_SECRET } from './jwt.js'
+
 dotenv.config()
 
 
