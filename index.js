@@ -9,8 +9,20 @@ import postsRouter from "./routes/posts.js";
 import commentsRouter from "./routes/comments.js";
 import userRouter from "./routes/user.js";
 
-// Load environment variables
+// Load .env variables
 dotenv.config();
+
+// --- Debug log untuk memastikan variabel lingkungan terbaca ---
+console.log("Loaded Environment Variables:");
+console.log("MONGODB_CONNECTION_STRING:", process.env.MONGODB_CONNECTION_STRING);
+console.log("DATABASE_NAME:", process.env.DATABASE_NAME);
+console.log("PORT:", process.env.PORT);
+
+// --- Validasi environment variables ---
+if (!process.env.MONGODB_CONNECTION_STRING || !process.env.DATABASE_NAME) {
+  console.error("❌ Missing MongoDB environment variables.");
+  process.exit(1);
+}
 
 const app = express();
 
@@ -34,20 +46,14 @@ app.use((req, res, next) => {
   passport.authenticate("jwt", { session: false })(req, res, next);
 });
 
-// Validate ENV variables
-if (!process.env.MONGODB_CONNECTION_STRING || !process.env.DATABASE_NAME) {
-  console.error("Missing MongoDB environment variables.");
-  process.exit(1);
-}
-
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING, {
     dbName: process.env.DATABASE_NAME,
   })
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => {
-    console.error("MongoDB connection error:", err);
+    console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
@@ -61,12 +67,12 @@ app.get("/", (req, res) => {
   res.send({ message: "Welcome to Kada-ch2 API" });
 });
 
-// Global Error Handler
+// Error handler
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error("❌ Internal error:", err);
   res.status(500).json({ message: err.message });
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
